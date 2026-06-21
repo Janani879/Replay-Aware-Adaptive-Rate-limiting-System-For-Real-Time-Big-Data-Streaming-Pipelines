@@ -1,0 +1,3 @@
+v1
+{"path":"file:///opt/spark/app/data/clean_events/part-00000-e2932b14-7806-46cf-8971-e5c47a39890b-c000.snappy.parquet","size":1115,"isDir":false,"modificationTime":1782049103171,"blockReplication":1,"blockSize":33554432,"action":"add"}
+{"path":"file:///opt/spark/app/data/clean_events/part-00044-ce02fc7c-d18d-4b2b-a30d-c84d0c2daa54-c000.snappy.parquet","size":3421,"isDir":false,"modificationTime":1782049104969,"blockReplication":1,"blockSize":33554432,"action":"add"}

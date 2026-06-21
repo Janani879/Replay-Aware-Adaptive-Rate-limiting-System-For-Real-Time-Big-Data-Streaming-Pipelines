@@ -1,0 +1,2 @@
+v1
+{"path":"file:///opt/spark/app/data/clean_events/part-00000-f4671d70-46f4-4b33-89f0-7e8f2e7f9bfa-c000.snappy.parquet","size":1115,"isDir":false,"modificationTime":1782044479293,"blockReplication":1,"blockSize":33554432,"action":"add"}
