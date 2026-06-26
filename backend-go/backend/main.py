@@ -1,4 +1,4 @@
-﻿import base64
+import base64
 import json
 import re
 import time
@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import redis
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response, Response
 from fastapi.middleware.cors import CORSMiddleware
 from kafka import KafkaProducer
 from kafka.admin import KafkaAdminClient, NewTopic
@@ -79,6 +79,61 @@ class ExperimentModeRequest(BaseModel):
     mode: str = Field(..., example="radar")
 
 
+def prom_label(value: Any) -> str:
+    return str(value).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+
+
+def metric_key(name: str) -> str:
+    return f"radar:prom:{name}"
+
+
+def metric_incr(name: str, amount: int | float = 1) -> None:
+    redis_client.incrbyfloat(metric_key(name), amount)
+
+
+def metric_set(name: str, value: int | float | str) -> None:
+    redis_client.set(metric_key(name), value)
+
+
+def metric_get(name: str, default: float = 0.0) -> float:
+    value = redis_client.get(metric_key(name))
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except ValueError:
+        return default
+
+
+def metric_hash_key(name: str) -> str:
+    return f"radar:prom:h:{name}"
+
+
+def metric_hash_incr(name: str, field: str, amount: int | float = 1) -> None:
+    redis_client.hincrbyfloat(metric_hash_key(name), field, amount)
+
+
+def metric_hash_set(name: str, field: str, value: int | float | str) -> None:
+    redis_client.hset(metric_hash_key(name), field, value)
+
+
+def metric_hash_getall(name: str) -> dict[str, str]:
+    return redis_client.hgetall(metric_hash_key(name))
+
+
+def metric_client_field(client_id: str, topic: str = "unknown") -> str:
+    return json.dumps({"client_id": client_id, "topic": topic}, sort_keys=True)
+
+
+def parse_metric_client_field(field: str) -> dict[str, str]:
+    try:
+        parsed = json.loads(field)
+        return {
+            "client_id": str(parsed.get("client_id", "unknown")),
+            "topic": str(parsed.get("topic", "unknown")),
+        }
+    except Exception:
+        return {"client_id": field, "topic": "unknown"}
 
 def sanitize_use_case_topic(name: str) -> str:
     normalized = re.sub(r"[^a-zA-Z0-9_-]+", "_", name.strip().lower()).strip("_")
@@ -314,6 +369,8 @@ def publish_event(event: Event):
     allowed, rate_info = allow_request(event.client_id, mode)
 
     if not allowed:
+        metric_incr("events_blocked_total")
+        metric_hash_incr("events_blocked_by_client_total", metric_client_field(event.client_id, "raw_events"))
         raise HTTPException(
             status_code=429,
             detail={
@@ -326,6 +383,8 @@ def publish_event(event: Event):
     event_data = prepare_event_data(event, topic="raw_events", use_case_id=event.use_case_id)
     producer.send("raw_events", event_data)
     producer.flush()
+    metric_incr("events_accepted_total")
+    metric_hash_incr("events_accepted_by_client_total", metric_client_field(event.client_id, "raw_events"))
 
     return {
         "status": "accepted",
@@ -350,6 +409,8 @@ def ingest_use_case(payload: UseCaseIngestRequest):
         allowed, rate_info = allow_request(event.client_id, mode)
         if not allowed:
             rejected += 1
+            metric_incr("events_blocked_total")
+            metric_hash_incr("events_blocked_by_client_total", metric_client_field(event.client_id, topic))
             rejections.append({
                 "client_id": event.client_id,
                 "entity_id": event.entity_id,
@@ -361,8 +422,15 @@ def ingest_use_case(payload: UseCaseIngestRequest):
         event_data["experiment_mode"] = mode
         producer.send(topic, event_data)
         accepted += 1
+        metric_incr("events_accepted_total")
+        metric_hash_incr("events_accepted_by_client_total", metric_client_field(event.client_id, topic))
 
     producer.flush()
+
+    metric_incr("uploads_total")
+    metric_set("last_upload_total_events", len(payload.events))
+    metric_set("last_upload_accepted", accepted)
+    metric_set("last_upload_rejected", rejected)
 
     return {
         "status": "ingested",
@@ -376,6 +444,65 @@ def ingest_use_case(payload: UseCaseIngestRequest):
         "rejections": rejections[:20],
     }
 
+
+
+@app.get("/metrics")
+def prometheus_metrics():
+    lines = [
+        "# HELP radar_events_accepted_total Events accepted by FastAPI and published to Kafka.",
+        "# TYPE radar_events_accepted_total counter",
+        f"radar_events_accepted_total {metric_get('events_accepted_total')}",
+        "# HELP radar_events_blocked_total Events blocked before Kafka by token bucket/RADAR.",
+        "# TYPE radar_events_blocked_total counter",
+        f"radar_events_blocked_total {metric_get('events_blocked_total')}",
+        "# HELP radar_uploads_total CSV/use-case uploads submitted to the gateway.",
+        "# TYPE radar_uploads_total counter",
+        f"radar_uploads_total {metric_get('uploads_total')}",
+        "# HELP radar_last_upload_total_events Events parsed in the latest upload.",
+        "# TYPE radar_last_upload_total_events gauge",
+        f"radar_last_upload_total_events {metric_get('last_upload_total_events')}",
+        "# HELP radar_last_upload_accepted Events admitted in the latest upload.",
+        "# TYPE radar_last_upload_accepted gauge",
+        f"radar_last_upload_accepted {metric_get('last_upload_accepted')}",
+        "# HELP radar_last_upload_rejected Events blocked in the latest upload.",
+        "# TYPE radar_last_upload_rejected gauge",
+        f"radar_last_upload_rejected {metric_get('last_upload_rejected')}",
+        "# HELP radar_clients_throttled_total RADAR limit decisions below the default limit.",
+        "# TYPE radar_clients_throttled_total counter",
+        f"radar_clients_throttled_total {metric_get('clients_throttled_total')}",
+        "# HELP radar_events_accepted_by_client_total Accepted events per client/topic.",
+        "# TYPE radar_events_accepted_by_client_total counter",
+    ]
+
+    for field, value in metric_hash_getall("events_accepted_by_client_total").items():
+        labels = parse_metric_client_field(field)
+        lines.append(f"radar_events_accepted_by_client_total{{client_id=\"{prom_label(labels['client_id'])}\",topic=\"{prom_label(labels['topic'])}\"}} {float(value)}")
+
+    lines.extend([
+        "# HELP radar_events_blocked_by_client_total Blocked events per client/topic.",
+        "# TYPE radar_events_blocked_by_client_total counter",
+    ])
+    for field, value in metric_hash_getall("events_blocked_by_client_total").items():
+        labels = parse_metric_client_field(field)
+        lines.append(f"radar_events_blocked_by_client_total{{client_id=\"{prom_label(labels['client_id'])}\",topic=\"{prom_label(labels['topic'])}\"}} {float(value)}")
+
+    lines.extend([
+        "# HELP radar_duplicate_ratio Latest ClickHouse-derived duplicate ratio per client/topic after RADAR update.",
+        "# TYPE radar_duplicate_ratio gauge",
+    ])
+    for field, value in metric_hash_getall("duplicate_ratio").items():
+        labels = parse_metric_client_field(field)
+        lines.append(f"radar_duplicate_ratio{{client_id=\"{prom_label(labels['client_id'])}\",topic=\"{prom_label(labels['topic'])}\"}} {float(value)}")
+
+    lines.extend([
+        "# HELP radar_limit_per_minute Latest adaptive RADAR limit per client/topic.",
+        "# TYPE radar_limit_per_minute gauge",
+    ])
+    for field, value in metric_hash_getall("adaptive_limit").items():
+        labels = parse_metric_client_field(field)
+        lines.append(f"radar_limit_per_minute{{client_id=\"{prom_label(labels['client_id'])}\",topic=\"{prom_label(labels['topic'])}\"}} {float(value)}")
+
+    return Response("\n".join(lines) + "\n", media_type="text/plain; version=0.0.4")
 
 @app.get("/ratelimit/{client_id}")
 def get_rate_limit(client_id: str):
@@ -430,6 +557,10 @@ def radar_update_limits():
         new_limit = radar_limit_from_duplicate_ratio(duplicate_ratio)
 
         redis_client.set(limit_key(client_id), new_limit, ex=3600)
+        metric_hash_set("duplicate_ratio", metric_client_field(client_id, row.get("use_case_topic", "unknown")), round(duplicate_ratio, 4))
+        metric_hash_set("adaptive_limit", metric_client_field(client_id, row.get("use_case_topic", "unknown")), new_limit)
+        if new_limit < DEFAULT_LIMIT_PER_MINUTE:
+            metric_incr("clients_throttled_total")
 
         decisions.append({
             "client_id": client_id,
@@ -442,6 +573,8 @@ def radar_update_limits():
         })
 
     return {"updated_clients": len(decisions), "decisions": decisions}
+
+
 
 
 

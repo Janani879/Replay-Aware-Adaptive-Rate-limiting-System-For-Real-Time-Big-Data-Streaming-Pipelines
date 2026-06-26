@@ -5,15 +5,20 @@ RADAR is a replay-aware adaptive rate limiting system for real-time big-data str
 The project demonstrates a full distributed-system loop:
 
 ```text
-CSV / API upload
+CSV / dashboard upload
     -> FastAPI gateway
     -> Redis token bucket enforcement
     -> Kafka per-use-case topic
     -> Spark Structured Streaming
-    -> clean Parquet storage + ClickHouse metrics
+    -> clean Parquet storage + ClickHouse duplicate metrics
     -> RADAR adaptive controller
     -> Redis client limits
     -> next upload is protected before Kafka
+
+Operational evidence:
+FastAPI / Kafka exporter / Redis exporter
+    -> Prometheus
+    -> Grafana live evidence dashboard
 ```
 
 ## Problem Statement
@@ -52,6 +57,21 @@ Redis enforces those limits before Kafka
 ![RADAR Architecture](docs/images/radar-architecture.svg)
 
 ```text
+                           +----------------------+
+                           | Grafana Dashboard    |
+                           | live evidence        |
+                           +----------^-----------+
+                                      |
+                           +----------+-----------+
+                           | Prometheus           |
+                           | time-series metrics  |
+                           +----------^-----------+
+                                      |
+             +------------------------+------------------------+
+             |                        |                        |
+      FastAPI /metrics          Kafka Exporter           Redis Exporter
+             |                        |                        |
+             v                        v                        v
 +-------------------+       +--------------------+       +------------------+
 | CSV / Dashboard   | ----> | FastAPI Gateway    | ----> | Kafka Topics     |
 | Event Upload      |       | /usecases/ingest   |       | usecase_*        |
@@ -67,7 +87,7 @@ Redis enforces those limits before Kafka
                               +-------+-------+          +------------------+
                               | RADAR         | <------  | ClickHouse       |
                               | Controller    |          | Metrics Store    |
-                              +---------------+          +------------------+
+                              +---------------+          +--------+---------+
                                                                   |
                                                                   v
                                                          +------------------+
@@ -80,13 +100,17 @@ Redis enforces those limits before Kafka
 
 | Component | Role | Port / Location |
 |---|---|---|
-| FastAPI backend | Accepts events, creates Kafka topics, applies Redis limits | `http://localhost:8000` |
+| FastAPI backend | Accepts events, creates Kafka topics, applies Redis limits, exposes RADAR metrics | `http://localhost:8000`, metrics at `/metrics` |
 | Kafka | Distributed event broker | broker `localhost:9092`, internal `kafka:29092` |
 | Kafka UI | Kafka browser UI | `http://localhost:8085` |
 | Spark | Streaming processor and dedup metric engine | Docker container `radar-spark`, Spark UI `http://localhost:4040` |
 | Redis | Token bucket and RADAR client limit store | host `localhost:6380`, container `6379` |
 | ClickHouse | Fast analytics store for duplicate metrics | `http://localhost:8123/play` |
-| Frontend dashboard | Upload, analytics, RADAR decisions, experiment evidence | `http://localhost:5173` |
+| Prometheus | Scrapes FastAPI, Kafka exporter, and Redis exporter metrics | `http://localhost:9090` |
+| Grafana | Live evidence dashboard for accepted/blocked events, limits, duplicate ratios | `http://localhost:3000` |
+| Kafka exporter | Exposes Kafka topic and broker metrics to Prometheus | `http://localhost:9308/metrics` |
+| Redis exporter | Exposes Redis operational metrics to Prometheus | `http://localhost:9121/metrics` |
+| Frontend dashboard | Upload, analytics, RADAR decisions, experiment evidence links | `http://localhost:5173` |
 | Parquet | Clean deduplicated event storage | `spark/data/clean_events` |
 
 ## Project Structure
@@ -179,6 +203,30 @@ It contains 10,000 records across five clients:
 | `fresh_gateway_noisy` | mixed normal and duplicate events | 1000 |
 
 ## Run The System
+
+### Fast Demo Command
+
+For a clean repeatable demo, run:
+
+```cmd
+cd C:\Users\janan\radar-streaming-platform
+scripts\demo-all.cmd
+```
+
+This resets Redis, ClickHouse metrics, Spark checkpoints, and clean Parquet output, then opens backend, Spark, and frontend terminals.
+
+Open:
+
+```text
+Frontend:   http://localhost:5173
+Kafka UI:   http://localhost:8085
+Prometheus: http://localhost:9090
+Grafana:    http://localhost:3000
+```
+
+Use this when you want to show the same Round 1 / Round 2 demo again from a clean state.
+
+### Manual Run
 
 ### 1. Start Docker Services
 
@@ -764,7 +812,7 @@ Comparison:
 
 - Replace Parquet clean storage with Delta Lake for ACID lakehouse semantics.
 - Add ClickHouse `ReplacingMergeTree` event table for serving clean event records.
-- Add Prometheus/Grafana for live Kafka, Spark, and Redis metrics.
+- Extend Prometheus/Grafana with deeper Spark Structured Streaming metrics such as input rows/sec, batch duration, and processing latency.
 - Deploy the system on Kubernetes using Minikube or KIND.
 - Add experimental baselines: no RADAR, static token bucket, RADAR adaptive controller.
 - Measure throughput, latency, Kafka message reduction, Spark processing cost, and duplicate waste reduction.
@@ -793,3 +841,72 @@ RADAR is a distributed streaming feedback-control system that uses Spark and Cli
 
 
 
+
+
+## Repeatable Demo Workflow
+
+For demos, use the Windows scripts in `scripts/` instead of typing every Docker, Redis, Spark, and frontend command manually.
+
+### Full clean demo start
+
+```cmd
+cd C:\Users\janan\radar-streaming-platform
+scripts\demo-all.cmd
+```
+
+This will:
+
+- Stop old RADAR containers.
+- Clear Spark checkpoints and clean Parquet output.
+- Recreate Docker services.
+- Recreate the ClickHouse metrics table.
+- Flush Redis state.
+- Install the Spark ClickHouse connector if needed.
+- Open backend, Spark, and frontend in separate terminals.
+
+### Manual terminal mode
+
+```cmd
+cd C:\Users\janan\radar-streaming-platform
+scripts\demo-reset.cmd
+scripts\run-backend.cmd
+scripts\run-spark.cmd
+scripts\run-frontend.cmd
+```
+
+Open:
+
+- Frontend: `http://localhost:5173`
+- Kafka UI: `http://localhost:8085`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000`
+
+## Prometheus and Grafana Evidence
+
+The project now exposes FastAPI/RADAR metrics at:
+
+```text
+http://localhost:8000/metrics
+```
+
+Prometheus scrapes that endpoint every 5 seconds, and Grafana auto-loads a dashboard called **RADAR Live Evidence**.
+
+Tracked custom RADAR metrics include:
+
+- `radar_events_accepted_total`
+- `radar_events_blocked_total`
+- `radar_last_upload_accepted`
+- `radar_last_upload_rejected`
+- `radar_duplicate_ratio`
+- `radar_limit_per_minute`
+- `radar_clients_throttled_total`
+
+Use this during the demo:
+
+1. Run Round 1 baseline upload.
+2. Let Spark write ClickHouse duplicate metrics.
+3. Click **Update RADAR**.
+4. Run Round 2 protected upload.
+5. Show Grafana panels for accepted vs blocked events, adaptive limits, duplicate ratios, and system impact.
+
+This complements ClickHouse: ClickHouse gives detailed research analytics, while Prometheus/Grafana gives live operational proof.

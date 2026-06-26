@@ -1,0 +1,75 @@
+{
+  "uid": "radar-overview",
+  "title": "RADAR Live Evidence",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Kafka Load Proxy: Accepted vs Blocked",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(radar_events_accepted_total[30s])", "legendFormat": "accepted/sec", "refId": "A" },
+        { "expr": "rate(radar_events_blocked_total[30s])", "legendFormat": "blocked/sec", "refId": "B" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Latest Upload: Accepted vs Rejected",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "radar_last_upload_accepted", "legendFormat": "accepted", "refId": "A" },
+        { "expr": "radar_last_upload_rejected", "legendFormat": "rejected", "refId": "B" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "bargauge",
+      "title": "RADAR Adaptive Limits",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "radar_limit_per_minute", "legendFormat": "{{client_id}}", "refId": "A" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "bargauge",
+      "title": "Duplicate Ratio by Client",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "radar_duplicate_ratio * 100", "legendFormat": "{{client_id}}", "refId": "A" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "System Impact: Blocked Before Kafka",
+      "gridPos": { "x": 0, "y": 16, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "radar_events_blocked_total", "legendFormat": "blocked", "refId": "A" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Uploads Run",
+      "gridPos": { "x": 8, "y": 16, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "radar_uploads_total", "legendFormat": "uploads", "refId": "A" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Clients Throttled by RADAR",
+      "gridPos": { "x": 16, "y": 16, "w": 8, "h": 6 },
+      "targets": [
+        { "expr": "radar_clients_throttled_total", "legendFormat": "clients", "refId": "A" }
+      ]
+    }
+  ]
+}

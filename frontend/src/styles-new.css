@@ -861,3 +861,129 @@ button:disabled {
     font-size: 1.5rem;
   }
 }
+
+
+.observability-panel {
+  border: 1px solid rgba(118, 129, 255, 0.35);
+  border-radius: 22px;
+  background: rgba(37, 39, 90, 0.72);
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+}
+
+.observability-panel h3 {
+  margin: 4px 0 8px;
+  color: #fff;
+}
+
+.observability-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.observability-links a {
+  border: 1px solid rgba(137, 148, 255, 0.45);
+  border-radius: 12px;
+  color: #cfd5ff;
+  padding: 10px 14px;
+  text-decoration: none;
+  background: rgba(16, 20, 48, 0.72);
+  font-weight: 700;
+}
+
+.grafana-frame-wrap {
+  border: 1px solid rgba(137, 148, 255, 0.28);
+  border-radius: 16px;
+  height: 520px;
+  overflow: hidden;
+  background: #101430;
+}
+
+.grafana-frame-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.observability-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.observability-grid div {
+  border: 1px solid rgba(137, 148, 255, 0.25);
+  border-radius: 14px;
+  background: rgba(16, 20, 48, 0.55);
+  padding: 14px;
+}
+
+.observability-grid strong,
+.observability-grid span {
+  display: block;
+}
+
+.observability-grid strong {
+  color: #fff;
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+}
+
+.observability-grid span {
+  color: #aab3d6;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .observability-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grafana-frame-wrap {
+    height: 420px;
+  }
+}
+
+@media (max-width: 640px) {
+  .observability-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.grafana-open-note {
+  border: 1px solid rgba(137, 148, 255, 0.28);
+  border-radius: 14px;
+  background: rgba(16, 20, 48, 0.62);
+  color: #aab3d6;
+  padding: 14px 16px;
+  margin: 14px 0 4px;
+  line-height: 1.5;
+}
+
+
+.observability-links-simple {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(137, 148, 255, 0.28);
+  border-radius: 14px;
+  background: rgba(16, 20, 48, 0.45);
+  color: #aab3d6;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: 0.92rem;
+}
+
+.observability-links-simple a {
+  color: #cfd5ff;
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(207, 213, 255, 0.55);
+}

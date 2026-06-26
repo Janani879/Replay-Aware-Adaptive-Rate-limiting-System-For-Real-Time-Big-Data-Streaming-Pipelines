@@ -566,6 +566,11 @@ export default function App() {
       {activeTab === "evidence" && (
         <section className="panel section-panel">
           <SectionTitle activeTab={activeTab} />
+          <div className="observability-links-simple">
+            <span>Live metrics are available separately:</span>
+            <a href="http://localhost:9090" target="_blank" rel="noreferrer">Prometheus</a>
+            <a href="http://localhost:3000/d/radar-overview/radar-live-evidence" target="_blank" rel="noreferrer">Grafana Dashboard</a>
+          </div>
           <div className="compare-selector">
             <label>
               Baseline use case
@@ -616,41 +621,7 @@ export default function App() {
               </div>
             </div>
           )}
-          <div className="experiment-table panel-lite">
-            <h3>Research Baseline Table</h3>
-            <p>Run the same CSV under each mode. This table shows the latest measured result for every algorithm, joined from backend admission logs and Spark/ClickHouse metrics.</p>
-            <div className="table-wrap compact-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Mode</th>
-                    <th>Latest Topic</th>
-                    <th>Accepted</th>
-                    <th>Blocked</th>
-                    <th>Kafka Messages</th>
-                    <th>Clean Events</th>
-                    <th>Spark Duplicates</th>
-                    <th>Dup Ratio</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {experimentResults.map((result) => (
-                    <tr key={result.id}>
-                      <td className="client-cell">{result.label}</td>
-                      <td>{result.latest?.topic ?? "Run this mode"}</td>
-                      <td>{result.latest?.accepted ?? "-"}</td>
-                      <td>{result.latest?.rejected ?? "-"}</td>
-                      <td>{result.latest?.kafkaMessages ?? "-"}</td>
-                      <td>{result.latest?.cleanEvents ?? "-"}</td>
-                      <td>{result.latest?.duplicateWaste ?? "-"}</td>
-                      <td>{result.latest ? formatRatio(result.latest.duplicateRatio) : "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div className="evidence-layout">
+<div className="evidence-layout">
             <div className="task-panel">
               <h3>End-to-End Task Trace</h3>
               <p className="panel-note">This makes the hidden distributed-system work visible for demo and evaluation.</p>
@@ -703,6 +674,7 @@ export default function App() {
     </main>
   );
 }
+
 
 
 
