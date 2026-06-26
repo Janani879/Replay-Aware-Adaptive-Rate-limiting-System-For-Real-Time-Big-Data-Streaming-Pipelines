@@ -1,170 +1,161 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="980" viewBox="0 0 1900 980">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="900" viewBox="0 0 1800 900">
   <defs>
-    <marker id="arrowDark" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
       <path d="M2,2 L10,6 L2,10 Z" fill="#111827" />
     </marker>
-    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <marker id="blueArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
       <path d="M2,2 L10,6 L2,10 Z" fill="#4f46e5" />
     </marker>
-    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+    <marker id="greenArrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
       <path d="M2,2 L10,6 L2,10 Z" fill="#16845b" />
     </marker>
     <filter id="shadow" x="-10%" y="-20%" width="120%" height="150%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#111827" flood-opacity="0.12" />
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.12" />
     </filter>
     <style>
       .bg { fill: #ffffff; }
-      .title { font: 800 26px Arial, sans-serif; fill: #0f172a; }
-      .subtitle { font: 500 14px Arial, sans-serif; fill: #64748b; }
-      .layer-title { font: 800 15px Arial, sans-serif; fill: #0f172a; }
-      .box-title { font: 800 15px Arial, sans-serif; fill: #111827; }
-      .box-sub { font: 600 12px Arial, sans-serif; fill: #334155; }
+      .title { font: 800 28px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 15px Arial, sans-serif; fill: #64748b; }
+      .section { font: 800 15px Arial, sans-serif; fill: #334155; letter-spacing: .3px; }
+      .box-title { font: 800 16px Arial, sans-serif; fill: #111827; }
+      .box-sub { font: 600 12px Arial, sans-serif; fill: #475569; }
       .tiny { font: 600 12px Arial, sans-serif; fill: #475569; }
       .note { font: 600 13px Arial, sans-serif; fill: #475569; }
-      .layer-stream { fill: #fffbd7; stroke: #d6c95d; stroke-width: 2; rx: 8; }
-      .layer-store { fill: #fffbd7; stroke: #d6c95d; stroke-width: 2; rx: 8; }
-      .layer-control { fill: #fff8d9; stroke: #d6c95d; stroke-width: 2; rx: 8; }
-      .layer-obs { fill: #eef7ff; stroke: #60a5fa; stroke-width: 2; rx: 8; }
-      .ingest { fill: #eeeaff; stroke: #8b7de8; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .api { fill: #eaf7ff; stroke: #60a5fa; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .kafka { fill: #e9e5ff; stroke: #8b7de8; stroke-width: 2; filter: url(#shadow); }
-      .spark { fill: #eeeaff; stroke: #8b7de8; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .store { fill: #e9fff3; stroke: #22a46f; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .redis { fill: #fff1e7; stroke: #f97316; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .radar { fill: #fff1e7; stroke: #f97316; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .obs { fill: #eff6ff; stroke: #3b82f6; stroke-width: 2; rx: 7; filter: url(#shadow); }
-      .arrow { stroke: #111827; stroke-width: 2.2; fill: none; marker-end: url(#arrowDark); }
-      .blue { stroke: #4f46e5; stroke-width: 2.6; fill: none; marker-end: url(#arrowBlue); }
-      .green { stroke: #16845b; stroke-width: 2.4; fill: none; marker-end: url(#arrowGreen); }
+      .panel { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.6; rx: 18; }
+      .ingest { fill: #f1f5ff; stroke: #818cf8; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .api { fill: #eff6ff; stroke: #60a5fa; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .redis { fill: #fff7ed; stroke: #f97316; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .kafka { fill: #f4f0ff; stroke: #8b5cf6; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .spark { fill: #f4f0ff; stroke: #8b5cf6; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .store { fill: #ecfdf5; stroke: #22c55e; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .radar { fill: #fff7ed; stroke: #fb923c; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .obs { fill: #eff6ff; stroke: #3b82f6; stroke-width: 2; rx: 10; filter: url(#shadow); }
+      .arrow { stroke: #111827; stroke-width: 2.3; fill: none; marker-end: url(#arrow); }
+      .blue { stroke: #4f46e5; stroke-width: 2.6; fill: none; marker-end: url(#blueArrow); }
+      .green { stroke: #16845b; stroke-width: 2.5; fill: none; marker-end: url(#greenArrow); }
       .dash { stroke-dasharray: 8 7; }
     </style>
   </defs>
 
-  <rect class="bg" width="1900" height="980" />
-  <text x="950" y="48" text-anchor="middle" class="title">RADAR Streaming Platform</text>
-  <text x="950" y="75" text-anchor="middle" class="subtitle">Adaptive Replay-Aware Rate Limiting + Live Prometheus/Grafana Observability</text>
+  <rect class="bg" width="1800" height="900" />
+  <text x="900" y="48" text-anchor="middle" class="title">RADAR Streaming Platform Architecture</text>
+  <text x="900" y="76" text-anchor="middle" class="subtitle">Replay-aware adaptive rate limiting with Kafka, Spark, ClickHouse, Redis, Prometheus, and Grafana</text>
 
-  <rect x="420" y="132" width="770" height="270" class="layer-stream" />
-  <text x="805" y="160" text-anchor="middle" class="layer-title">Streaming Processing Layer</text>
+  <!-- Main pipeline panel -->
+  <rect x="60" y="125" width="1680" height="230" class="panel" />
+  <text x="90" y="155" class="section">1. Event Ingestion and Stream Processing</text>
 
-  <rect x="1265" y="128" width="450" height="285" class="layer-store" />
-  <text x="1490" y="156" text-anchor="middle" class="layer-title">Storage + Analytics Layer</text>
+  <rect x="100" y="205" width="145" height="72" class="ingest" />
+  <text x="172" y="232" text-anchor="middle" class="box-title">CSV Upload</text>
+  <text x="172" y="253" text-anchor="middle" class="box-sub">Dashboard / API</text>
 
-  <rect x="1265" y="505" width="450" height="130" class="layer-control" />
-  <text x="1490" y="533" text-anchor="middle" class="layer-title">Adaptive Control Layer</text>
+  <line x1="245" y1="241" x2="320" y2="241" class="arrow" />
+  <text x="282" y="224" text-anchor="middle" class="tiny">HTTP</text>
 
-  <rect x="260" y="735" width="1360" height="140" class="layer-obs" />
-  <text x="940" y="763" text-anchor="middle" class="layer-title">Operational Observability Layer</text>
+  <rect x="320" y="205" width="145" height="72" class="api" />
+  <text x="392" y="232" text-anchor="middle" class="box-title">FastAPI</text>
+  <text x="392" y="253" text-anchor="middle" class="box-sub">gateway</text>
 
-  <!-- Ingestion path -->
-  <rect x="60" y="242" width="125" height="58" class="ingest" />
-  <text x="122" y="266" text-anchor="middle" class="box-title">CSV /</text>
-  <text x="122" y="286" text-anchor="middle" class="box-title">Dashboard</text>
+  <line x1="465" y1="241" x2="545" y2="241" class="arrow" />
+  <text x="505" y="224" text-anchor="middle" class="tiny">per-client check</text>
 
-  <line x1="185" y1="271" x2="270" y2="271" class="arrow" />
-  <text x="228" y="257" text-anchor="middle" class="tiny">HTTP upload</text>
+  <rect x="545" y="205" width="155" height="72" class="redis" />
+  <text x="622" y="232" text-anchor="middle" class="box-title">Redis</text>
+  <text x="622" y="253" text-anchor="middle" class="box-sub">token bucket</text>
 
-  <rect x="270" y="242" width="135" height="58" class="api" />
-  <text x="337" y="266" text-anchor="middle" class="box-title">FastAPI</text>
-  <text x="337" y="286" text-anchor="middle" class="box-title">Gateway</text>
+  <line x1="700" y1="241" x2="780" y2="241" class="arrow" />
+  <text x="740" y="224" text-anchor="middle" class="tiny">accepted only</text>
 
-  <line x1="405" y1="271" x2="475" y2="271" class="arrow" />
-  <text x="440" y="257" text-anchor="middle" class="tiny">accepted</text>
+  <rect x="780" y="205" width="155" height="72" class="kafka" />
+  <text x="857" y="232" text-anchor="middle" class="box-title">Kafka</text>
+  <text x="857" y="253" text-anchor="middle" class="box-sub">usecase_* topics</text>
 
-  <polygon points="575,154 665,271 575,388 485,271" class="kafka" />
-  <text x="575" y="264" text-anchor="middle" class="box-title">Kafka</text>
-  <text x="575" y="284" text-anchor="middle" class="box-title">usecase_*</text>
+  <line x1="935" y1="241" x2="1015" y2="241" class="arrow" />
+  <text x="975" y="224" text-anchor="middle" class="tiny">stream</text>
 
-  <line x1="665" y1="271" x2="745" y2="271" class="arrow" />
-  <text x="705" y="257" text-anchor="middle" class="tiny">stream read</text>
+  <rect x="1015" y="205" width="170" height="72" class="spark" />
+  <text x="1100" y="232" text-anchor="middle" class="box-title">Spark</text>
+  <text x="1100" y="253" text-anchor="middle" class="box-sub">structured streaming</text>
 
-  <rect x="745" y="242" width="155" height="58" class="spark" />
-  <text x="823" y="265" text-anchor="middle" class="box-title">Spark</text>
-  <text x="823" y="285" text-anchor="middle" class="box-title">Structured Streaming</text>
+  <line x1="1185" y1="241" x2="1265" y2="241" class="arrow" />
+  <text x="1225" y="224" text-anchor="middle" class="tiny">dedup key</text>
 
-  <line x1="900" y1="271" x2="980" y2="271" class="arrow" />
-  <text x="940" y="257" text-anchor="middle" class="tiny">dedup key</text>
+  <rect x="1265" y="205" width="160" height="72" class="spark" />
+  <text x="1345" y="232" text-anchor="middle" class="box-title">Dedup</text>
+  <text x="1345" y="253" text-anchor="middle" class="box-sub">drop duplicates</text>
 
-  <rect x="980" y="242" width="145" height="58" class="spark" />
-  <text x="1052" y="265" text-anchor="middle" class="box-title">drop</text>
-  <text x="1052" y="285" text-anchor="middle" class="box-title">duplicates</text>
+  <line x1="1425" y1="241" x2="1510" y2="241" class="arrow" />
+  <text x="1468" y="224" text-anchor="middle" class="tiny">clean stream</text>
 
-  <!-- Storage routes -->
-  <path d="M1125 256 C1180 215, 1222 198, 1265 182" class="arrow" />
-  <text x="1195" y="204" text-anchor="middle" class="tiny">clean events</text>
+  <rect x="1510" y="205" width="165" height="72" class="store" />
+  <text x="1592" y="232" text-anchor="middle" class="box-title">Parquet</text>
+  <text x="1592" y="253" text-anchor="middle" class="box-sub">clean events</text>
 
-  <rect x="1325" y="180" width="160" height="62" class="store" />
-  <text x="1405" y="205" text-anchor="middle" class="box-title">Parquet</text>
-  <text x="1405" y="225" text-anchor="middle" class="box-title">Clean Storage</text>
+  <!-- Analytics and feedback panel -->
+  <rect x="60" y="405" width="1680" height="210" class="panel" />
+  <text x="90" y="435" class="section">2. Duplicate Analytics and RADAR Feedback Control</text>
 
-  <path d="M1125 286 C1190 327, 1228 340, 1265 342" class="arrow" />
-  <text x="1200" y="333" text-anchor="middle" class="tiny">raw / unique / duplicate</text>
+  <rect x="820" y="480" width="180" height="74" class="store" />
+  <text x="910" y="507" text-anchor="middle" class="box-title">ClickHouse</text>
+  <text x="910" y="528" text-anchor="middle" class="box-sub">duplicate metrics</text>
 
-  <rect x="1325" y="315" width="170" height="66" class="store" />
-  <text x="1410" y="341" text-anchor="middle" class="box-title">ClickHouse</text>
-  <text x="1410" y="361" text-anchor="middle" class="box-title">Metrics Store</text>
+  <rect x="1135" y="480" width="180" height="74" class="radar" />
+  <text x="1225" y="507" text-anchor="middle" class="box-title">RADAR</text>
+  <text x="1225" y="528" text-anchor="middle" class="box-sub">adaptive controller</text>
 
-  <!-- Control loop -->
-  <path d="M1410 381 L1410 505" class="blue" />
-  <text x="1467" y="454" text-anchor="middle" class="tiny">duplicate ratios</text>
+  <rect x="1450" y="480" width="180" height="74" class="redis" />
+  <text x="1540" y="507" text-anchor="middle" class="box-title">Redis Limits</text>
+  <text x="1540" y="528" text-anchor="middle" class="box-sub">next upload protected</text>
 
-  <rect x="1330" y="555" width="160" height="60" class="radar" />
-  <text x="1410" y="579" text-anchor="middle" class="box-title">RADAR</text>
-  <text x="1410" y="599" text-anchor="middle" class="box-title">Controller</text>
+  <path d="M1345 277 L1345 365 L910 365 L910 480" class="arrow" />
+  <text x="1108" y="350" text-anchor="middle" class="tiny">raw, unique, duplicate counts</text>
 
-  <path d="M1330 586 C1040 520, 680 430, 405 300" class="blue" />
-  <text x="890" y="494" text-anchor="middle" class="tiny">writes adaptive limits</text>
+  <line x1="1000" y1="517" x2="1135" y2="517" class="blue" />
+  <text x="1068" y="500" text-anchor="middle" class="tiny">duplicate ratios</text>
 
-  <rect x="215" y="355" width="155" height="60" class="redis" />
-  <text x="292" y="379" text-anchor="middle" class="box-title">Redis</text>
-  <text x="292" y="399" text-anchor="middle" class="box-title">Token Bucket</text>
+  <line x1="1315" y1="517" x2="1450" y2="517" class="blue" />
+  <text x="1382" y="500" text-anchor="middle" class="tiny">new limits</text>
 
-  <path d="M335 300 L302 355" class="blue" />
-  <text x="282" y="331" text-anchor="middle" class="tiny">check</text>
-  <path d="M292 355 L330 300" class="blue" />
-  <text x="365" y="333" text-anchor="middle" class="tiny">allow / block</text>
+  <path d="M1540 480 L1540 390 L622 390 L622 277" class="blue" />
+  <text x="1040" y="378" text-anchor="middle" class="tiny">feedback loop updates enforcement before Kafka</text>
 
-  <path d="M215 385 L115 385" class="blue dash" />
-  <text x="153" y="372" text-anchor="middle" class="tiny">blocked before Kafka</text>
+  <path d="M545 288 L250 288" class="blue dash" />
+  <text x="395" y="315" text-anchor="middle" class="tiny">blocked replay traffic stops here</text>
 
-  <!-- Observability sources -->
-  <rect x="365" y="790" width="145" height="58" class="obs" />
-  <text x="438" y="814" text-anchor="middle" class="box-title">FastAPI</text>
-  <text x="438" y="834" text-anchor="middle" class="box-title">/metrics</text>
+  <!-- Observability panel -->
+  <rect x="60" y="665" width="1680" height="150" class="panel" />
+  <text x="90" y="695" class="section">3. Live Operational Evidence</text>
 
-  <rect x="585" y="790" width="145" height="58" class="obs" />
-  <text x="658" y="814" text-anchor="middle" class="box-title">Kafka</text>
-  <text x="658" y="834" text-anchor="middle" class="box-title">Exporter</text>
+  <rect x="260" y="725" width="270" height="62" class="obs" />
+  <text x="395" y="749" text-anchor="middle" class="box-title">Metrics Sources</text>
+  <text x="395" y="770" text-anchor="middle" class="box-sub">FastAPI / Kafka exporter / Redis exporter</text>
 
-  <rect x="805" y="790" width="145" height="58" class="obs" />
-  <text x="878" y="814" text-anchor="middle" class="box-title">Redis</text>
-  <text x="878" y="834" text-anchor="middle" class="box-title">Exporter</text>
+  <line x1="530" y1="756" x2="690" y2="756" class="green" />
+  <text x="610" y="739" text-anchor="middle" class="tiny">scraped every 5s</text>
 
-  <rect x="1055" y="790" width="165" height="58" class="obs" />
-  <text x="1138" y="814" text-anchor="middle" class="box-title">Prometheus</text>
-  <text x="1138" y="834" text-anchor="middle" class="box-title">scrapes 5s</text>
+  <rect x="690" y="725" width="190" height="62" class="obs" />
+  <text x="785" y="749" text-anchor="middle" class="box-title">Prometheus</text>
+  <text x="785" y="770" text-anchor="middle" class="box-sub">time-series metrics</text>
 
-  <rect x="1300" y="790" width="165" height="58" class="obs" />
-  <text x="1382" y="814" text-anchor="middle" class="box-title">Grafana</text>
-  <text x="1382" y="834" text-anchor="middle" class="box-title">Live Evidence</text>
+  <line x1="880" y1="756" x2="1040" y2="756" class="green" />
+  <text x="960" y="739" text-anchor="middle" class="tiny">visualized</text>
 
-  <!-- Observability routes, kept below main flow -->
-  <path d="M337 300 C350 475, 378 640, 438 790" class="green dash" />
-  <path d="M575 388 C590 535, 620 665, 658 790" class="green dash" />
-  <path d="M292 415 C420 560, 650 705, 878 790" class="green dash" />
+  <rect x="1040" y="725" width="200" height="62" class="obs" />
+  <text x="1140" y="749" text-anchor="middle" class="box-title">Grafana</text>
+  <text x="1140" y="770" text-anchor="middle" class="box-sub">live evidence dashboard</text>
 
-  <path d="M510 819 L585 819" class="green" />
-  <path d="M730 819 L805 819" class="green" />
-  <path d="M950 819 L1055 819" class="green" />
-  <path d="M1220 819 L1300 819" class="green" />
+  <rect x="1320" y="715" width="300" height="82" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="10" />
+  <text x="1470" y="739" text-anchor="middle" class="box-title">Demo Evidence</text>
+  <text x="1470" y="762" text-anchor="middle" class="box-sub">Accepted vs blocked events</text>
+  <text x="1470" y="782" text-anchor="middle" class="box-sub">Adaptive limits and duplicate ratios</text>
 
   <!-- Legend -->
-  <rect x="60" y="885" width="1780" height="54" fill="#f8fafc" stroke="#e2e8f0" rx="8" />
-  <line x1="110" y1="912" x2="180" y2="912" class="arrow" />
-  <text x="195" y="916" class="note">event/data flow</text>
-  <line x1="375" y1="912" x2="445" y2="912" class="blue" />
-  <text x="460" y="916" class="note">RADAR feedback control</text>
-  <line x1="690" y1="912" x2="760" y2="912" class="green dash" />
-  <text x="775" y="916" class="note">metrics export</text>
-  <text x="1025" y="916" class="note">ClickHouse stores detailed research analytics; Prometheus/Grafana show live operational proof of reduced load.</text>
+  <rect x="60" y="842" width="1680" height="44" fill="#f8fafc" stroke="#e2e8f0" rx="10" />
+  <line x1="110" y1="864" x2="175" y2="864" class="arrow" />
+  <text x="190" y="868" class="note">event/data flow</text>
+  <line x1="390" y1="864" x2="455" y2="864" class="blue" />
+  <text x="470" y="868" class="note">RADAR feedback control</text>
+  <line x1="730" y1="864" x2="795" y2="864" class="green" />
+  <text x="810" y="868" class="note">observability metrics</text>
+  <text x="1120" y="868" class="note">ClickHouse gives detailed experiment analytics; Prometheus/Grafana gives live system-load proof.</text>
 </svg>
